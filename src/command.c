@@ -62,6 +62,7 @@ static bool cmd_traceswo(target *t, int argc, const char **argv);
 #if defined(PLATFORM_HAS_DEBUG) && !defined(PC_HOSTED)
 static bool cmd_debug_bmp(target *t, int argc, const char **argv);
 #endif
+static bool cmd_release_target(target *t, int argc, const char **argv);
 
 const struct command_s cmd_list[] = {
 	{"version", (cmd_handler)cmd_version, "Display firmware version info"},
@@ -86,6 +87,7 @@ const struct command_s cmd_list[] = {
 #if defined(PLATFORM_HAS_DEBUG) && !defined(PC_HOSTED)
 	{"debug_bmp", (cmd_handler)cmd_debug_bmp, "Output BMP \"debug\" strings to the second vcom: (enable|disable)"},
 #endif
+	{"release_target", (cmd_handler)cmd_release_target, "Let the target firmware be running"},
 	{NULL, NULL, NULL}
 };
 
@@ -402,3 +404,19 @@ static bool cmd_debug_bmp(target *t, int argc, const char **argv)
 	return true;
 }
 #endif
+
+static bool cmd_release_target(target *t, int argc, const char **argv)
+{
+	(void)t;
+	(void)argv;
+
+	if (argc == 1) {
+		gpio_set(SWCLK_PORT, SWCLK_PIN);  // SWDCLK: low for debugging, high for normal work
+		gdb_outf("Target released. Restarting target firmware...\n");
+		cmd_hard_srst(NULL, 0, NULL);
+	} else {
+		gdb_outf("Unrecognized command format\n");
+	}
+
+	return true;
+}

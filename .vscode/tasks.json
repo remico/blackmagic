@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "PATH=/home/user/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/:${PATH} make -j8",
+            "group": "build"
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "make clean",
+            "group": "build"
+        },
+        {
+            "label": "upload firmware",
+            "type": "shell",
+            "command": "sudo dfu-util -d 1d50:6018,:6017 -s 0x08002000:leave -D ${workspaceFolder}/src/blackmagic.bin",
+            "group": "build"
+        }
+    ]
+}
